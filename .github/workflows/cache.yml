@@ -1,0 +1,36 @@
+name: Action with Dependency Caching
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  test-cache:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: cache-a4341c3
+        restore-keys: |
+          cache-a4341c3
+    
+    - name: prime-cache-a4341c3
+      run: |
+        if [ "${{ steps.cache.outputs.cache-hit }}" == "true" ]; then
+          echo "Cache hit"
+        else
+          echo "Cache miss"
+        fi
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests pandas
